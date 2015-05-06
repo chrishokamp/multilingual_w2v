@@ -1,4 +1,4 @@
-___ Multilingual w2v
+### Multilingual w2v
 
 This implementation uses the matrix transformation method described in [Mikolov et al 2013](http://arxiv.org/pdf/1309.4168.pdf)
 
