@@ -1,0 +1,5 @@
+*.pyc
+*.gz
+.ipynb_checkpoints/
+tmp_*
+.idea/
