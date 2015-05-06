@@ -15,8 +15,12 @@ class MultilingualW2VTests(unittest.TestCase):
         module_path = os.path.dirname(os.path.realpath(__file__))
         lang_1_code = 'en'
         lang_2_code = 'de'
+        # 100 dim vectors
         lang_1_index = os.path.join(module_path, 'test_data/news-commentary-v8.en.w2v-model.bin')
+        # 100 dim vectors
         lang_2_index = os.path.join(module_path, 'test_data/news-commentary-v8.de.w2v-model.bin')
+        # 50 dim vectors (to test different vector sizes)
+        lang_2_small = os.path.join(module_path, 'test_data/news-commentary-v8.de.w2v-model.50.bin')
 
         # load the word pairs
         word_pair_json = os.path.join(module_path, 'test_data/en-de.word-pairs.json')
@@ -24,9 +28,7 @@ class MultilingualW2VTests(unittest.TestCase):
             bilingual_word_pairs = json.loads(json_in.read())
 
         self.mult_w2v = MultilingualW2V(lang_1_code, lang_2_code, lang_1_index, lang_2_index, bilingual_word_pairs)
-        # self.spec_list = dictionaryfeatureextractor(language='english')
-        # self.custom_list = dictionaryfeatureextractor(punctuation=',.:;()', stopwords=['sam'])
-
+        self.mult_w2v_different_dims = MultilingualW2V(lang_1_code, lang_2_code, lang_1_index, lang_2_small, bilingual_word_pairs)
 
     def test_train_index(self):
         self.assertTrue(self.mult_w2v.W is None)
@@ -44,6 +46,16 @@ class MultilingualW2VTests(unittest.TestCase):
         just_target_words = [u[0] for u in target_words_with_scores]
         self.assertTrue(expected_target_word in set(just_target_words))
 
+    def test_different_dims(self):
+        self.mult_w2v_different_dims.train()
+
+        self.assertEqual(self.mult_w2v_different_dims.W.shape, (50, 100))
+
+        source_word = u'father'
+        expected_target_word = u'Vater'
+        target_words_with_scores = self.mult_w2v_different_dims.multilingual_most_similar(source_word)
+        just_target_words = [u[0] for u in target_words_with_scores]
+        self.assertTrue(expected_target_word in set(just_target_words))
 
 if __name__ == '__main__':
     unittest.main()
